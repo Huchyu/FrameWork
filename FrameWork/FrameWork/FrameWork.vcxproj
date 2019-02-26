@@ -118,8 +118,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constart.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="Constant.h" />
+    <ClInclude Include="Headers.h" />
     <ClInclude Include="Struct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
