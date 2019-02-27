@@ -8,3 +8,4 @@ using namespace std;
 
 #include "Struct.h"
 #include "Constant.h"
+#include "Enum.h"

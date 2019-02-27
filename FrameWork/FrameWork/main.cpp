@@ -3,7 +3,18 @@
 
 
 
+//** 전역 변수
+SCENEID SceneState = SCENEID_LOGO;
 
+User* pPlayer = CreateUser();
+
+
+
+//** SceneManager
+void SceneManager();
+
+//** InputManager
+DWORD InputManager();
 
 //** 커서 좌표를 이동시키고 이동한 위치에서 해당 컬러값으로 문자열을 출력.
 void SetCursorPosition(const int _ix, const int _iy, const char* str, const int _Color);
@@ -20,43 +31,17 @@ char* SetName();
 //** 객체를 생성하는 함수
 User* CreateUser();
 
-//** InputManager
-DWORD InputManager();
 
 
-const int MAX = 10;
+
+void SetPlayerPosition();
 
 
 int main()
 {
-	User* pObjList[OBJECT_MAX];
-
-	for (int i = 0; i < OBJECT_MAX; ++i)
-	{
-		pObjList[i] = (User*)malloc(sizeof(User));
-		pObjList[i]->Name = SetName();
-		pObjList[i]->Position = Vector3(0.f, 0.f);
-	}
-
-	for (int i = 0; i < OBJECT_MAX; ++i)
-	{
-		printf_s("%s\n", pObjList[i]->Name);
-	}
-	printf_s("\n");
-
-	printf_s("%s\n", pObjList[OBJECT_PLAYER]->Name);
-	printf_s("%s\n", pObjList[OBJECT_MONSTER]->Name);
-	printf_s("%s\n", pObjList[OBJECT_BULLET]->Name);
-
-
-	system("pause");
-
-
-
-
 	SetCursorHide();
 
-	User* pPlayer = CreateUser();
+	pPlayer = CreateUser();
 
 	//** GetTickCount = 1/1000 초
 	DWORD dwTime = GetTickCount();
@@ -69,31 +54,8 @@ int main()
 			dwTime = GetTickCount();
 			system("cls");
 
-			DWORD dwKey = InputManager();
+			SceneManager();
 
-			if (dwKey & KEY_UP)
-			{
-				pPlayer->Position.y -= 1;
-			}
-			if (dwKey & KEY_DOWN)
-			{
-				pPlayer->Position.y += 1;
-			}
-			if (dwKey & KEY_LEFT)
-			{
-				pPlayer->Position.x -= 2;
-			}
-			if (dwKey & KEY_RIGHT)
-			{
-				pPlayer->Position.x += 2;
-			}
-
-
-			//** 출력
-			SetCursorPosition(
-				int(pPlayer->Position.x),
-				int(pPlayer->Position.y),
-				pPlayer->Name, 15);
 		}
 	}
 
@@ -102,7 +64,71 @@ int main()
 }
 
 
+void SceneManager()
+{
+	DWORD dwKey = InputManager();
 
+	switch (SceneState)
+	{
+	case SCENEID_LOGO:
+		printf_s("SCENEID_LOGO\nKEY_ENTER\n");
+		if (dwKey & KEY_ENTER)
+		{
+			SceneState = SCENEID_MENU;
+		}
+		break;
+	case SCENEID_MENU:
+		printf_s("SCENEID_MENU\nKEY_SPACE\n");
+		if (dwKey & KEY_ENTER)
+		{
+			SceneState = SCENEID_STAGE;
+		}
+		break;
+	case SCENEID_STAGE:
+		printf_s("SCENEID_STAGE\n");
+		
+		//** 키 체크
+		SetPlayerPosition();
+
+		//** 출력
+		SetCursorPosition(
+			int(pPlayer->Position.x),
+			int(pPlayer->Position.y),
+			pPlayer->Name, 15);
+		break;
+	default:
+		break;
+	}
+
+
+}
+
+
+DWORD InputManager()
+{
+	DWORD dwKey = 0;
+
+	//** 키 입력
+	if (GetAsyncKeyState(VK_UP))
+		dwKey |= KEY_UP;
+
+	if (GetAsyncKeyState(VK_DOWN))
+		dwKey |= KEY_DOWN;
+
+	if (GetAsyncKeyState(VK_LEFT))
+		dwKey |= KEY_LEFT;
+
+	if (GetAsyncKeyState(VK_RIGHT))
+		dwKey |= KEY_RIGHT;
+
+	if (GetAsyncKeyState(VK_RETURN))
+		dwKey |= KEY_ENTER;
+
+	if (GetAsyncKeyState(VK_SPACE))
+		dwKey |= KEY_SPACE;
+
+	return dwKey;
+}
 
 //** 커서 좌표를 이동시키고 이동한 위치에서 해당 컬러값으로 문자열을 출력.
 void SetCursorPosition(const int _ix, const int _iy, const char* str, const int _Color)
@@ -173,27 +199,24 @@ User* CreateUser()
 }
 
 
-DWORD InputManager()
+void SetPlayerPosition()
 {
-	DWORD dwKey = 0;
+	DWORD dwKey = InputManager();
 
-	//** 키 입력
-	if (GetAsyncKeyState(VK_UP))
+	if (dwKey & KEY_UP)
 	{
-		dwKey |= KEY_UP;
+		pPlayer->Position.y -= 1;
 	}
-	if (GetAsyncKeyState(VK_DOWN))
+	if (dwKey & KEY_DOWN)
 	{
-		dwKey |= KEY_DOWN;
+		pPlayer->Position.y += 1;
 	}
-	if (GetAsyncKeyState(VK_LEFT))
+	if (dwKey & KEY_LEFT)
 	{
-		dwKey |= KEY_LEFT;
+		pPlayer->Position.x -= 2;
 	}
-	if (GetAsyncKeyState(VK_RIGHT))
+	if (dwKey & KEY_RIGHT)
 	{
-		dwKey |= KEY_RIGHT;
+		pPlayer->Position.x += 2;
 	}
-
-	return dwKey;
 }

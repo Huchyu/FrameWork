@@ -1,13 +1,6 @@
 #pragma once
 
 
-const int OBJECT_PLAYER = 0;
-const int OBJECT_MONSTER = 1;
-const int OBJECT_BULLET = 2;
-const int OBJECT_MAX = 3;
-
-
-
 const DWORD KEY_UP = 0x00000001;
 const DWORD KEY_DOWN = 0x00000002;
 const DWORD KEY_LEFT = 0x00000004;
