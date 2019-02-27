@@ -6,7 +6,7 @@
 //** 전역 변수
 SCENEID SceneState = SCENEID_LOGO;
 
-User* pPlayer = CreateUser();
+User* pPlayer = NULL;
 
 
 
@@ -79,7 +79,7 @@ void SceneManager()
 		break;
 	case SCENEID_MENU:
 		printf_s("SCENEID_MENU\nKEY_SPACE\n");
-		if (dwKey & KEY_ENTER)
+		if (dwKey & KEY_SPACE)
 		{
 			SceneState = SCENEID_STAGE;
 		}
