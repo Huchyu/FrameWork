@@ -6,9 +6,9 @@
 //** 전역 변수
 SCENEID SceneState = SCENEID_LOGO;
 
-User* pPlayer = NULL;
-
-
+Object* pPlayer = NULL;
+Object* pBullet[BULLET_MAX] = { NULL };
+Object* pMonster[MONSTER_MAX] = { NULL };
 
 //** SceneManager
 void SceneManager();
@@ -29,23 +29,26 @@ void SetColor(int _Color);
 char* SetName();
 
 //** 객체를 생성하는 함수
-User* CreateUser();
+Object* CreateObject();
 
+//** 객체를 초기화하는 함수
+void Initialize(Object* _pUser);
 
-
-
+//** 플레이어의 위치를 변경하는 함수
 void SetPlayerPosition();
+
+//** SetPosition(변경 대상, 변경할 값)
+void SetPosition(Vector3* _vPos, Vector3 _point);
 
 
 int main()
 {
 	SetCursorHide();
 
-	pPlayer = CreateUser();
+	pPlayer = CreateObject();
 
 	//** GetTickCount = 1/1000 초
 	DWORD dwTime = GetTickCount();
-
 
 	while (true)
 	{
@@ -55,7 +58,6 @@ int main()
 			system("cls");
 
 			SceneManager();
-
 		}
 	}
 
@@ -67,6 +69,7 @@ int main()
 void SceneManager()
 {
 	DWORD dwKey = InputManager();
+	DWORD dwTime = GetTickCount();
 
 	switch (SceneState)
 	{
@@ -95,6 +98,56 @@ void SceneManager()
 			int(pPlayer->Position.x),
 			int(pPlayer->Position.y),
 			pPlayer->Name, 15);
+
+		for (int i = 0; i < BULLET_MAX; ++i)
+		{
+			if (pBullet[i])
+			{
+				pBullet[i]->Position.x += 2;
+
+				SetCursorPosition(
+					int(pBullet[i]->Position.x),
+					int(pBullet[i]->Position.y),
+					pPlayer->Name, 15);
+
+				if (pBullet[i]->Position.x > 100)
+				{
+					free(pBullet[i]);
+					pBullet[i] = NULL;
+				}
+			}
+
+		}
+		if (dwTime + 1000 < GetTickCount())
+		{
+			dwTime = GetTickCount();
+
+			for (int i = 0; i < MONSTER_MAX; ++i)
+			{
+				if (!pMonster[i])
+				{
+					pMonster[i] = CreateObject();
+					SetPosition(&pMonster[i]->Position, Vector3(100, pPlayer->Position.y, 0));
+					break;
+				}
+
+				if (pMonster[i])
+				{
+					pMonster[i]->Position.x -= 2;
+
+					SetCursorPosition(
+						int(pMonster[i]->Position.x),
+						int(pMonster[i]->Position.y),
+						"■", 15);
+
+					if (pMonster[i]->Position.x < 0)
+					{
+						free(pMonster[i]);
+						pMonster[i] = NULL;
+					}
+				}
+			}
+		}
 		break;
 	default:
 		break;
@@ -185,10 +238,10 @@ char* SetName()
 }
 
 //** 객체를 생성하는 함수
-User* CreateUser()
+Object* CreateObject()
 {
 	//** 동적 할당
-	User* pUser = (User*)malloc(sizeof(User));
+	Object* pUser = (Object*)malloc(sizeof(Object));
 
 	//** Initialzie
 	pUser->Name = (char*)"옷";// SetName();
@@ -198,6 +251,11 @@ User* CreateUser()
 	return pUser;
 }
 
+void Initialize(Object* _pUser)
+{
+	_pUser->Name = (char*)"옷"; // SetName();
+	_pUser->Position = Vector3(0.f, 0.f);
+}
 
 void SetPlayerPosition()
 {
@@ -219,4 +277,22 @@ void SetPlayerPosition()
 	{
 		pPlayer->Position.x += 2;
 	}
+	if (dwKey & KEY_SPACE)
+	{
+		for (int i = 0; i < BULLET_MAX; ++i)
+		{
+			if (!pBullet[i])
+			{
+				pBullet[i] = CreateObject();
+				SetPosition(&pBullet[i]->Position, pPlayer->Position);
+				break;
+			}
+		}
+	}
+}
+
+void SetPosition(Vector3* _vPos, Vector3 _point)
+{
+	_vPos->x = _point.x;
+	_vPos->y = _point.y;
 }

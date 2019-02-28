@@ -16,9 +16,9 @@ typedef struct tagVector3
 }Vector3;
 
 
-typedef struct tagUser
+typedef struct tagObject
 {
 	char* Name;
 	Vector3 Position;
 
-}User;
+}Object;

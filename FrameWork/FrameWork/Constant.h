@@ -1,6 +1,9 @@
 #pragma once
 
 
+const int BULLET_MAX = 128;
+const int MONSTER_MAX = 128;
+
 const DWORD KEY_UP = 0x00000001;
 const DWORD KEY_DOWN = 0x00000002;
 const DWORD KEY_LEFT = 0x00000004;
